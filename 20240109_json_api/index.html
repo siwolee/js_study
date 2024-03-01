@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+	<title>Document</title>
+</head>
+<style>
+	section, header {
+		font-family: Verdana, Geneva, Tahoma, sans-serif;
+		justify-content: center;
+		display: flex;
+		text-align: center;
+	}
+	header {
+		flex-direction: column;
+	}
+	h1{
+		font-family: 'Rubik Glitch', system-ui;
+		font-size: 4rem;
+	}
+	p {
+		font-size: 1rem;
+		width: 100%;
+		text-align: center;
+	}
+
+</style>
+<body>
+	<header></header>
+	<section>
+		<button id="refresh">refresh</button>
+	</section>
+	<script>
+		var $ = document.querySelector.bind(document);
+		var header = $("header");
+		var section = $("section");
+		
+		var requestURL = "https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json";
+		
+		var request = new XMLHttpRequest();
+		request.open("GET", requestURL);
+
+		//type as json;
+		request.responseType = "json";
+		request.send();
+
+		//우리는 로드 이벤트가 request 객체에 발생할 때에 작동하는 이벤트 핸들러 내에 코드를 넣었습니다.
+		//함수를 키매핑하는 개념
+		request.onload = initData;
+
+		var heroData;
+
+		function initData() {
+			heroData = request.response;
+			console.log(heroData);
+			populateHeader(heroData);
+			makeHeroCard(heroData);
+		}
+
+		function populateHeader(jsonObj) {
+			var myH1 = document.createElement("h1");
+			myH1.textContent = jsonObj["squadName"];
+			header.appendChild(myH1);
+			
+			var myPara = document.createElement("p");
+			myPara.innerText = 
+			"Hometown: " + jsonObj["homeTown"] + 
+			" && Formed: " + jsonObj["squadName"];
+			console.log(myPara);
+			header.appendChild(myPara);
+		}
+
+		function makeHeroData(jsonObj) {
+			var container = document.cr
+		}
+		
+
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!-- dragging slider and getting random api -->
+<!--https://www.youtube.com/watch?v=f4D50VnO_Gw-->
+<!-- https://developer.mozilla.org/ko/docs/Web/API/HTMLElement/drag_event -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<style>
+	body {
+		background-color: peachpuff;
+		font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	}
+	.container{
+		background-color: rgba(254, 255, 200, 0.55);
+		box-shadow: 0px 10px 40px rgb(254, 255, 200);
+		padding: 40px;
+		display: block;
+	}
+	.drag-container{
+		width: 200px;
+		height: 50px;
+		display: flex;
+		gap: 20px;
+		align-items: center;
+	}
+	.drag-zone {
+		width: 100px;
+		height: 10px;
+		background-color: white;
+		box-shadow: 1px 1px 4px rgb(148, 130, 117);
+		margin-bottom: 10px;
+		display: flex;
+		gap: 0px;
+		margin-top: 10px;
+	}
+	#drag-zone-cell{
+		width: 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.drag-btn {
+		width: 10px;
+		height: 20px;
+		background-color:gray;
+		box-shadow: 2px 2px 2px salmon;
+		/*사용자가 버튼 텍스트 클릭 못하게*/
+		user-select: none;
+		border-radius: 10px;
+		margin: 0px;
+	}
+	.dragging {
+		opacity: 0.5;
+	}
+	.load-more {
+		background-color:gray;
+		color: white;
+		box-shadow: 2px 2px 2px salmon;
+	}
+</style>
+<body>
+	<div class="container">
+		<h1>Random Dog Facts</h1>
+		<div class="drag-container">
+			<div class="drag-zone">
+				<div class="1" id="drag-zone-cell">
+					<div class="drag-btn" draggable="true"></div>
+				</div>
+			</div>
+			<p class="drag-status">1</p>
+			<button class="load-more">load-more</button>
+		</div>
+	</div>
+</body>
+<script>
+	const dogFactDiv = document.querySelector(".container");
+	const loadMoreBtn = document.querySelector(".load-more");
+	const dragBtn = document.querySelector(".drag-btn");
+	const dragZone = document.querySelector(".drag-zone");
+	
+	function render() {
+		for (var i = 2; i <= 5 ; i++) {
+			const dragcell = document.createElement('div');
+			dragcell.classList.add(i);
+			dragcell.id = "drag-zone-cell";
+			dragZone.appendChild(dragcell);
+		}	
+	}
+	render();
+	
+	loadMoreBtn.addEventListener("click", loadMore);
+	
+	const loadFacts = (numberOfFacts = 5) => {
+		const DOG_URL = `https://dogapi.dog/api/facts?number=${numberOfFacts}`;
+		console.log(numberOfFacts);
+		fetch(DOG_URL)
+		.then(response => response.json())
+		.then(responseJson => showDogFacts(responseJson))
+	}
+
+	function showDogFacts(Json){
+		const facts = Json.facts;
+		for (const fact of facts){
+			const dogFact = document.createElement('p');
+			dogFact.innerText = fact;
+			dogFactDiv.appendChild(dogFact);
+		}
+	}
+
+	loadFacts(5);
+
+	let dragged; 
+
+	document.addEventListener("drag", (event) => {
+		console.log("draging");
+	})
+
+	document.addEventListener("dragstart", (e) => {
+		//드래그한 요소에 대한 참조 저장
+		dragged = event.target;
+		//반투명하게 만들기
+		e.target.classList.add("dragging");
+	});
+
+	document.addEventListener("dragend", (e) => {
+		//투명도 초기화
+		event.target.classList.remove("dragging");
+	})
+
+	document.addEventListener("dragover", (e) => {
+		event.preventDefault();
+	})
+
+	let level = 1;
+	document.addEventListener("drop", (event) => {
+		//기본 동작 취소
+		event.preventDefault();
+		if (event.target.id === "drag-zone-cell"){
+			dragged.parentNode.removeChild(dragged);
+			event.target.appendChild(dragged);
+			level = event.target.classList[0];
+			const status = document.querySelector(".drag-status");
+			status.innerText = level;
+		}
+	});
+	
+	function loadMore(e) {
+		loadFacts(level);
+	}
+</script>
+</html>
